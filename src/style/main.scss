@@ -1,5 +1,13 @@
+@use "../../node_modules/@nichoth/forms/style/text-input";
+@use "../../node_modules/@nichoth/forms/style/button";
+
 body {
     background-color: pink;
+}
+
+form {
+    max-width: 40rem;
+    margin: 0 auto;
 }
 
 .controls {

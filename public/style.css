@@ -1,5 +1,96 @@
+.form-stuff .input-group {
+  position: relative;
+  width: 100%;
+  margin: 2rem 0;
+}
+.form-stuff .input-group input {
+  font-size: 1.2rem;
+  padding: 10px 10px 10px 5px;
+  display: block;
+  width: calc(100% - 1rem);
+  border: none;
+  border-bottom: 1px solid #757575;
+}
+.form-stuff .input-group input:focus {
+  outline: none;
+  border-bottom: 4px solid #4285f4;
+}
+.form-stuff .input-group input:invalid:not(:focus):not(:placeholder-shown) {
+  border-bottom: 4px solid red;
+}
+.form-stuff .input-group label {
+  color: #999;
+  font-size: 18px;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 5px;
+  top: 10px;
+  transition: 0.2s ease all;
+}
+.form-stuff .input-group input:focus ~ label,
+.form-stuff .input-group input:not(:placeholder-shown) ~ label {
+  top: -20px;
+  font-size: 14px;
+  color: #4285f4;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.form-stuff button {
+  margin-right: 1rem;
+  position: relative;
+  color: white;
+  background-color: #4281CB;
+  padding: 0.5rem 2rem;
+  font-size: 1rem;
+  border: none;
+}
+.form-stuff button:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+.form-stuff button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.form-stuff button.spinning {
+  opacity: 0.6;
+}
+.form-stuff button.spinning .btn-content {
+  visibility: hidden;
+}
+.form-stuff button.spinning:hover {
+  cursor: initial;
+}
+.form-stuff button.spinning::after {
+  content: "";
+  background: transparent;
+  box-sizing: border-box;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  border-radius: 50%;
+  border-top: 2px solid white;
+  border-right: 2px solid transparent;
+  animation: spinner 0.6s linear infinite;
+}
+
 body {
   background-color: pink;
+}
+
+form {
+  max-width: 40rem;
+  margin: 0 auto;
 }
 
 .controls {

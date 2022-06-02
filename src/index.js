@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { html } from 'htm/react';
 
@@ -10,24 +11,54 @@ const Button = require('@nichoth/forms/react/button')
 
 function PasswordDemo () {
     const [state, setState] = useState({})
+    const [isResolving, setResolving] = useState(false)
+    const [isOk, setOk] = useState(false)
+
+    function savePassword (ev) {
+        ev.preventDefault()
+        setResolving(true)
+
+        setTimeout(() => {
+            setResolving(false)
+        }, 2000)  // 2 seconds
+    }
+
+    const vals = {
+        password: '',
+        'password-verify': ''
+    }
+
+    function handleInput (ev) {
+        console.log('input', ev.target.value, ev.target.name)
+        const { name, value } = ev.target
+        vals[name] = value
+        if (vals.password !== vals['password-verify']) return
+        console.log('is equal')
+    }
+
+    console.log('vals', vals)
 
     return html`<div className="counter">
-        test life
 
-        <form>
+        <form onSubmit=${savePassword} onInput=${handleInput}>
+            <p>Create a password</p>
             <${TextInput} type="password" displayName="Password"
-                name="password"
+                required=${true} name="password"
             />
             <${TextInput} type="password" displayName="Verify password"
                 name="password-verify"
             />
-            <${Button} type="submit" />
+            <${Button} disabled=${!isOk} type="submit"
+                isSpinning=${isResolving}
+            >
+                Submit
+            <//>
+
         </form>
     </div>`
 }
 
 ReactDOM.render(html`<${PasswordDemo} />`, document.getElementById('content'));
-
 
 
 
