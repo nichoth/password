@@ -1,15 +1,16 @@
 {
   "scripts": {
-    "start": "npm run build && concurrently --kill-others \"npm run serve\" \"npm run watch-sass\"",
+    "start": "mkdir -p public && npm run build && concurrently --kill-others \"npm run serve\" \"npm run watch-sass\"",
     "serve": "budo src/index.js:bundle.js --dir=public/ --live --pushstate --open -- -t babelify -p esmify -dv",
     "build": "npm run copy && npm run build-js && npm run build-sass",
     "build-sass": "sass src/style/main.scss public/style.css",
-    "build-js": "browserify -p esmify -t babelify -t unassertify -t uglifyify --debug src/index.js > public/bundle.js",
+    "build-js": "browserify -p esmify -t babelify -t unassertify -t uglifyify --debug src/index.js | uglifyjs -c > public/bundle.js",
     "watch-sass": "sass --watch src/style/main.scss public/style.css",
     "copy": "cp src/index.html public"
   },
   "dependencies": {
     "@nichoth/events": "^1.1.2",
+    "@nichoth/forms": "^2.0.0",
     "htm": "^3.1.0",
     "observ": "^0.2.0",
     "observ-struct": "^6.0.0",
@@ -25,6 +26,7 @@
     "concurrently": "^6.2.0",
     "esmify": "^2.1.1",
     "sass": "^1.36.0",
+    "uglify-js": "^3.15.5",
     "uglifyify": "^5.0.2",
     "unassertify": "^2.1.1"
   }
