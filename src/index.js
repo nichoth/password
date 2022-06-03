@@ -10,9 +10,11 @@ const Button = require('@nichoth/forms/react/button')
 
 
 function PasswordDemo () {
-    const [state, setState] = useState({})
     const [isResolving, setResolving] = useState(false)
-    const [isOk, setOk] = useState(false)
+    const [pendingPwds, setPendingPwds] = useState({
+        password: '',
+        passwordVerify: ''
+    })
 
     function savePassword (ev) {
         ev.preventDefault()
@@ -23,32 +25,78 @@ function PasswordDemo () {
         }, 2000)  // 2 seconds
     }
 
-    const vals = {
-        password: '',
-        'password-verify': ''
-    }
+    console.log('render', pendingPwds)
+
+    // (?=.*[a-z]) -- at least one lowercase letter
+    // (?=.*[A-Z]) -- at least one uppercase letter
+    // (?=.*[0-9]) -- at least one digit
+    const tester = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%\^\"'&*()]).")
+    const specialChars = '!@#$%^&*()_-+={[}]|:;"\'<,>.'
 
     function handleInput (ev) {
-        console.log('input', ev.target.value, ev.target.name)
+        console.log('input', ev.target.name, ev.target.value)
         const { name, value } = ev.target
-        vals[name] = value
-        if (vals.password !== vals['password-verify']) return
-        console.log('is equal')
+
+        const obj = {}
+        obj[name] = value
+        console.log('obj', obj)
+        const pwds = Object.assign({}, pendingPwds, obj)
+
+        setPendingPwds(pwds)
     }
 
-    console.log('vals', vals)
+    console.log('render', pendingPwds)
 
-    return html`<div className="counter">
+    function pwIsOk () {
+        // const { name, value } = ev.target
+        const { password, passwordVerify } = pendingPwds
 
-        <form onSubmit=${savePassword} onInput=${handleInput}>
+        // // TODO -- could use regex here, but how?
+        const hasSpecial = Array.prototype.some.call(password, l => {
+            return specialChars.includes(l)
+        })
+
+        if (password.length <= 6) return false
+        console.log('is more than 6')
+
+        if (password !== passwordVerify) return false
+        console.log('is equal')
+
+        if (!hasSpecial || !tester.test(password)) return false
+        console.log('has special and regex is ok')
+
+        return true
+    }
+
+    const instructions = [
+        'Password has a min length of 6 characters',
+        'Password has at least 1 uppercase character',
+        'Password has at least 1 lowercase character',
+        'Password has at least 1 number',
+        'Password has at least 1 special character (!@#$%^&*()_-+={[}]|:;"\'<,>.)'
+    ]
+
+    return html`
+    <ul className="instructions">
+        ${instructions.map((line, i) => {
+            return html`<li key=${i}>${line}</li>`
+        })}
+    </ul>
+
+    <div className="password-form">
+        <form onSubmit=${savePassword}>
             <p>Create a password</p>
             <${TextInput} type="password" displayName="Password"
-                required=${true} name="password"
+                required=${true} name="password" minLength=${6}
+                onChange=${handleInput}
+                value=${pendingPwds.password}
             />
             <${TextInput} type="password" displayName="Verify password"
-                name="password-verify"
+                name="passwordVerify"
+                onChange=${handleInput}
+                value=${pendingPwds.passwordVerify}
             />
-            <${Button} disabled=${!isOk} type="submit"
+            <${Button} disabled=${!pwIsOk()} type="submit"
                 isSpinning=${isResolving}
             >
                 Submit
@@ -59,51 +107,3 @@ function PasswordDemo () {
 }
 
 ReactDOM.render(html`<${PasswordDemo} />`, document.getElementById('content'));
-
-
-
-
-
-// var evs = namespace({
-//     count: ['inc', 'dec']
-// })
-
-// var bus = Bus({ memo: true })
-
-// var state = struct({
-//     count: observ(0)
-// })
-
-// bus.on(evs.count.inc, () => {
-//     state.count.set(state.count() + 1)
-// })
-
-// bus.on(evs.count.dec, () => {
-//     state.count.set(state.count() - 1)
-// })
-
-// function App () {
-//     var [_state, setState] = useState(state());
-//     state(function onChange (newState) {
-//         setState(newState)
-//     })
-//     var emit = bus.emit.bind(bus)
-
-//     return html`<div className="app">
-//         <${Counter} ...${_state} emit=${emit} />
-//     </div>`
-// }
-
-// function Counter (props) {
-//     var { emit } = props
-//     return html`<div className="counter">
-//         ${props.count}
-//         <div className="controls">
-//             <button onClick=${emit(evs.count.inc)}>plus</button>
-//             <button onClick=${emit(evs.count.dec)}>minus</button>
-//         </div>
-//     </div>`
-// }
-
-// ReactDOM.render(html`<${App} />`, document.getElementById('content'));
-
